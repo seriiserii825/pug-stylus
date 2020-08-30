@@ -17,6 +17,16 @@ let gulp = require('gulp'),
 let siteUrl = 'http://pug-stylus.host1670806.hostland.pro';
 let siteDir = '../bs-pug/';
 
+gulp.task('pug', function () {
+	return gulp.src(siteDir + "**/*.pug")
+		.pipe(pug({pretty: true}))
+		.pipe(rename(function (path) {
+			path.extname = ".php"
+		}))
+		.pipe(gulp.dest('.'))
+		.pipe(browserSync.reload({stream: true}));
+});
+
 gulp.task('stylus', function () {
 	return gulp.src(siteDir + 'assets/css/my.styl')
 		.pipe(sourcemaps.init())
@@ -29,6 +39,7 @@ gulp.task("watch", function () {
 	gulp.watch(siteDir + "**/*.styl").on('change', gulp.series('stylus'));
 	gulp.watch(siteDir + "**/*.css").on('change', browserSync.reload);
 	gulp.watch(siteDir + "**/*.php").on('change', browserSync.reload);
+	gulp.watch(siteDir + "**/*.pug").on('change', gulp.series('pug'));
 });
 
 
@@ -42,4 +53,4 @@ gulp.task('browser-sync', function () {
 	});
 });
 
-gulp.task('default', gulp.parallel('stylus', 'watch', 'browser-sync'));
+gulp.task('default', gulp.parallel('pug', 'stylus', 'watch', 'browser-sync'));
